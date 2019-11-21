@@ -26,6 +26,7 @@ The workshop is based on list of ARM templates (.json files); each file can be r
    - two Azure VMs with ip forwarding enabled
    - a bastion host
    - an Azure firewall
+   - a dmz subnet with an Azure VM
   
   *Before running the step1, change the* **ADMINISTROR_USERNAME** *and* **ADMINISTRATOR_PASSWORD**
 
@@ -59,7 +60,7 @@ The network diagram is shown below:
 
 [![2]][2]
 
-### <a name="step1"></a>1.Actions after execution of step1:
+### <a name="step1"></a>1. Actions after execution of step1:
 1. connect to the vmdmz via bastion
 2. browse to http:// 10.X.1.36
 3. browse to http:// 10.X.1.37
@@ -68,7 +69,7 @@ The network diagram is shown below:
 6. Check the backend pool of ilb: you should see nva1, nva2 as backed VMs 
 7. Enable the icmp echo in vmdmz (windows firewall)
 
-### <a name="step2"></a>2.Actions after execution of step2:
+### <a name="step2"></a>2. Actions after execution of step2:
 
 1. connect to the vm0
 2. change the windows firewall to enable icmp (ping)
