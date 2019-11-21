@@ -77,9 +77,12 @@ The network diagram is shown below:
    - storage account
    - SQL server
 4. run in cmd shell
+   ```console
    nslookup <sqlserverName>.database.windows.net
    nslookup <storageaccountName>.blob.core.windows.net
+   ```
    The naming need to be translated in private IP
+
 5. download and install "Azure Storage Explorer" in the vm0
    https://go.microsoft.com/fwlink/?LinkId=708343&clcid=0x409
 6. download and install "SQL Management Studio" in the vm0
