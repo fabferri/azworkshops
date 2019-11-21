@@ -84,8 +84,10 @@ The network diagram is shown below:
    The naming need to be translated in private IP
 
 5. download and install "Azure Storage Explorer" in the vm0
+   
    https://go.microsoft.com/fwlink/?LinkId=708343&clcid=0x409
 6. download and install "SQL Management Studio" in the vm0
+
    https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver15
 7. By Storage Explorer connect to the storage account
 8. By SQL Management Studio connect to the SQL server 
