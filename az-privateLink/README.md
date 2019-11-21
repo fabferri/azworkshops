@@ -72,7 +72,7 @@ The network diagram is shown below:
 ### <a name="step2"></a>2. Actions after execution of step2:
 
 1. connect to the vm0
-2. change the windows firewall to enable icmp (ping)
+2. enable icmp echo in windows firewall
 3. browse in the deployment to take note the name of 
    - storage account
    - SQL server
