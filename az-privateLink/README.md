@@ -27,19 +27,19 @@ The workshop is based on list of ARM templates (.json files); each file can be r
    - a bastion host
    - an Azure firewall
   
-  **Before running the step1, change the ADMINISTROR_USERNAME and ADMINISTRATOR_PASSWORD**
+  ***Before running the step1, change the*** **ADMINISTROR_USERNAME** ***and*** **ADMINISTRATOR_PASSWORD**
 
 * **step02-vnet2.ps1**: it create the vnet2 with two private endpoints, one to access to the SQL DB and another one to access to a storage account
   
-  **Before running the step2, change the ADMINISTROR_USERNAME and ADMINISTRATOR_PASSWORD**
+  ***Before running the step2, change the*** **ADMINISTROR_USERNAME** ***and*** **ADMINISTRATOR_PASSWORD**
 
 * **step03-vnet3.ps1**: it creates the vnet3
 
-**Before running the step3, change the ADMINISTROR_USERNAME and ADMINISTRATOR_PASSWORD**
+***Before running the step3, change the*** **ADMINISTROR_USERNAME** ***and*** **ADMINISTRATOR_PASSWORD**
 
 * **step04-servicevnet.ps1**: it create the service vnet with a service link, load balancer and two VMs 
 
-**Before running the step3, change the ADMINISTROR_USERNAME and ADMINISTRATOR_PASSWORD**
+***Before running the step4, change the*** **ADMINISTROR_USERNAME** ***and*** **ADMINISTRATOR_PASSWORD**
 
 * **step05-vnetpeering.ps1**: it create two vnet peering:
    - vnet peering between hub-vnet and vnet2
