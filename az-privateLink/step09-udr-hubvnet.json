@@ -1,0 +1,137 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "companyId": {
+            "type": "string",
+            "metadata": {
+                "description": "numeric identification of the company"
+            }
+        },
+        "location1": {
+            "type": "string",
+            "metadata": {
+                "description": "azure region where is deployed the vnet1"
+            }
+        },
+        "resourceGroupVNet1": {
+            "type": "string",
+            "metadata": {
+                "description": "resource group vnet1"
+            }
+        },
+        "vnet1Name": {
+            "type": "string",
+            "metadata": {
+                "description": "Name vnet1"
+            }
+        }
+    },
+    "variables": {
+        "companyId": "[parameters('companyId')]",
+        "location1": "[parameters('location1')]",
+        "vnet1Name": "[parameters('vnet1Name')]",
+        "resourceGroupVNet1": "[parameters('resourceGroupVNet1')]",
+        "vNet1IPFirstOctet": "10",
+        "vNet1IPSecondOctet": "[variables('companyId')]",
+        "vNet1IPThirdOctet": "1",
+        "lbFrontEndIP1": "[concat(variables('vNet1IPFirstOctet'),'.', variables('vNet1IPSecondOctet'),'.', variables('vNet1IPThirdOctet'),'.5')]",
+        "firewallInternalIP": "[concat(variables('vNet1IPFirstOctet'),'.', variables('vNet1IPSecondOctet'),'.', variables('vNet1IPThirdOctet'),'.68')]",
+        "vNet2IPFirstOctet": "10",
+        "vNet2IPSecondOctet": "[variables('companyId')]",
+        "vNet2IPThirdOctet": "2",
+        "vNet2AddressPrefix": "[concat(variables('vNet2IPFirstOctet'),'.', variables('vNet2IPSecondOctet'),'.', variables('vNet2IPThirdOctet'),'.0/24')]",
+        "vNet3IPFirstOctet": "10",
+        "vNet3IPSecondOctet": "[variables('companyId')]",
+        "vNet3IPThirdOctet": "3",
+        "vNet3AddressPrefix": "[concat(variables('vNet3IPFirstOctet'),'.', variables('vNet3IPSecondOctet'),'.', variables('vNet3IPThirdOctet'),'.0/24')]",
+        "dmzSubnetName": "dmzSubnet",
+        "dmzSubnetPrefix": "[concat(variables('vNet1IPFirstOctet'),'.', variables('vNet1IPSecondOctet'),'.', variables('vNet1IPThirdOctet'),'.192/27')]",
+        "RT-hub-dmz": {
+            "name": "RT-hub-dmz",
+            "location": "[variables('location1')]",
+            "nameRTEntry1": "rt-to-vnet2",
+            "destinationAddressPrefix1": "[variables('vNet2AddressPrefix')]",
+            "nextHopType1": "VirtualAppliance",
+            "nextHopIpAddress1": "[variables('lbFrontEndIP1')]",
+            "nameRTEntry2": "rt-to-vnet3",
+            "destinationAddressPrefix2": "[variables('vNet3AddressPrefix')]",
+            "nextHopType2": "VirtualAppliance",
+            "nextHopIpAddress2": "[variables('lbFrontEndIP1')]",
+            "nameRTEntry3": "rt-to-default",
+            "destinationAddressPrefix3": "0.0.0.0/0",
+            "nextHopType3": "VirtualAppliance",
+            "nextHopIpAddress3": "[variables('firewallInternalIP')]"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/routeTables",
+            "name": "[variables('RT-hub-dmz').name]",
+            "apiVersion": "2019-09-01",
+            "location": "[variables('location1')]",
+            "dependsOn": [],
+            "comments": "RT-hub vnet-subnet DMZ",
+            "properties": {
+                "routes": [
+                    {
+                        "name": "[variables('RT-hub-dmz').nameRTEntry1]",
+                        "properties": {
+                            "addressPrefix": "[variables('RT-hub-dmz').destinationAddressPrefix1]",
+                            "nextHopType": "[variables('RT-hub-dmz').nextHopType1]",
+                            "nextHopIpAddress": "[variables('RT-hub-dmz').nextHopIpAddress1]"
+                        }
+                    },
+                    {
+                        "name": "[variables('RT-hub-dmz').nameRTEntry2]",
+                        "properties": {
+                            "addressPrefix": "[variables('RT-hub-dmz').destinationAddressPrefix2]",
+                            "nextHopType": "[variables('RT-hub-dmz').nextHopType2]",
+                            "nextHopIpAddress": "[variables('RT-hub-dmz').nextHopIpAddress2]"
+                        }
+                    },
+                    {
+                        "name": "[variables('RT-hub-dmz').nameRTEntry3]",
+                        "properties": {
+                            "addressPrefix": "[variables('RT-hub-dmz').destinationAddressPrefix3]",
+                            "nextHopType": "[variables('RT-hub-dmz').nextHopType3]",
+                            "nextHopIpAddress": "[variables('RT-hub-dmz').nextHopIpAddress3]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "2019-08-01",
+            "name": "adding-RT-to-hub-vnet",
+            "type": "Microsoft.Resources/deployments",
+            "subscriptionId": "[subscription().subscriptionId]",
+            "resourceGroup": "[variables('resourceGroupVNet1')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/routeTables', variables('RT-hub-dmz').name)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+                    "contentVersion": "1.0.0.0",
+                    "variables": {},
+                    "resources": [
+                        {
+                            "apiVersion": "2019-09-01",
+                            "type": "Microsoft.Network/virtualNetworks/subnets",
+                            "name": "[concat( variables('vnet1Name'),'/', variables('dmzSubnetName') )]",
+                            "location": "[variables('location1')]",
+                            "properties": {
+                                "addressPrefix": "[variables('dmzSubnetPrefix')]",
+                                "routeTable": {
+                                    "id": "[resourceId('Microsoft.Network/routeTables', variables('RT-hub-dmz').name)]"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

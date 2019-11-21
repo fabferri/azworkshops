@@ -1,0 +1,107 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "azure region where is deployed the vnet3"
+            }
+        },
+        "resourceGroupVNet3": {
+            "type": "string",
+            "metadata": {
+                "description": "Specifies the Resource Group where is deployed the vnet3"
+            }
+        },
+        "vnetName":{
+            "type": "string",
+            "metadata": {
+                "description": "Specifies the name of the vnet3"
+            }
+        },
+        "privateEndpointName": {
+            "type": "string",
+            "defaultValue": "priv-ep3",
+            "metadata": {
+                "description": "Specifies the name of the Private Endpoint to be created"
+            }
+        },
+        "privateLinkService_AzureSubscriptionId": {
+            "type": "string",
+            "defaultValue": "[subscription().subscriptionId]",
+            "metadata": {
+                "description": "Specifies the Azure subscription Id where is deployed the Private Link Service"
+            }
+        },
+        "privateLinkService_ResourceGroup": {
+            "type": "string",
+            "metadata": {
+                "description": "Specifies the Resource Group where is deployed the Private Link Service"
+            }
+        },
+        "privateLinkService_Name": {
+            "type": "string",
+            "defaultValue": "privateLinkSrv01",
+            "metadata": {
+                "description": "Specifies the name of the Private Link Service defined in the vnet service"
+            }
+        },
+        "privateLinkConnectionMessage": {
+            "type": "string",
+            "defaultValue": "Please approve my connection, thanks!",
+            "metadata": {
+                "description": "Text to include when sending a request to connect to a Private Link service"
+            }
+        }
+    },
+    "variables": {
+        "location":"[parameters('location')]",
+        "privateLinkService_Name": "[parameters('privateLinkService_Name')]",
+        "privateLinkServiceId": "[resourceId(parameters('privateLinkService_AzureSubscriptionId'), parameters('privateLinkService_ResourceGroup'), 'Microsoft.Network/privateLinkServices', variables('privateLinkService_Name') )]",
+        "privateEndpointName" : "[parameters('privateEndpointName')]",
+        "resourceGroupVNet3" : "[parameters('resourceGroupVNet3')]",
+        "vnetName": "[parameters('vnetName')]",
+        "subnet1Name": "subnet1",
+        "subnet1Id": "[resourceId(subscription().subscriptionId, variables('resourceGroupVNet3'), 'Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnet1Name'))]"
+    },
+    "resources": [
+        {
+            "apiVersion": "2019-08-01",
+            "name": "create-pe-vnet3",
+            "type": "Microsoft.Resources/deployments",
+            "subscriptionId": "[subscription().subscriptionId]",
+            "resourceGroup": "[variables('resourceGroupVNet3')]",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+                    "contentVersion": "1.0.0.0",
+                    "variables": {},
+                    "resources": [
+                        {
+                            "apiVersion": "2019-09-01",
+                            "type": "Microsoft.Network/privateEndpoints",
+                            "name": "[variables('privateEndpointName')]",
+                            "location": "[variables('location')]",
+                            "properties": {
+                                "privateLinkServiceConnections": [
+                                    {
+                                        "name": "{plsConnectionAutoApproval}",
+                                        "properties": {
+                                            "privateLinkServiceId": "[variables('privateLinkServiceId')]",
+                                            "requestMessage": "[parameters('privateLinkConnectionMessage')]"
+                                        }
+                                    }
+                                ],
+                                "subnet": {
+                                    "id": "[variables('subnet1Id')]"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

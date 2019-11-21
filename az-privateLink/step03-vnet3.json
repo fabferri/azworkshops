@@ -1,0 +1,291 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "companyId": {
+            "type": "string",
+            "metadata": {
+                "description": "numeric identification of the company"
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "allowedValues": [
+                "eastus",
+                "eastus2",
+                "centralus",
+                "southcentralus",
+                "northcentralus",
+                "westcentralus",
+                "westus",
+                "westus2",
+                "canadacentral",
+                "canadaeast",
+                "westeurope",
+                "northeurope",
+                "uksouth",
+                "ukwest",
+                "francesouth",
+                "francecentral",
+                "southindia",
+                "centralindia",
+                "westindia",
+                "eastasia",
+                "southeastasia",
+                "japaneast",
+                "japanwest",
+                "australiaeast",
+                "australiasoutheast",
+                "australiacentral",
+                "australiacentral2"
+            ],
+            "metadata": {
+                "description": "Specifies the location for all of the resources created by this template. Availability zones are only supported in certain regions.  For the last supported zones, see https://docs.microsoft.com/en-us/azure/availability-zones/az-overview#services-support-by-region."
+            }
+        },
+        "adminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "Specifies the virtual machine administrator username."
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Specifies the virtual machine administrator password."
+            }
+        },
+        "storageAccountType": {
+            "type": "string",
+            "defaultValue": "Standard_LRS",
+            "allowedValues": [
+                "Standard_LRS",
+                "Standard_GRS",
+                "Standard_ZRS",
+                "Premium_LRS"
+            ],
+            "metadata": {
+                "description": "Storage Account type"
+            }
+        },
+        "isWindowsOS": {
+            "type": "bool",
+            "defaultValue": true,
+            "allowedValues": [
+                true,
+                false
+            ],
+            "metadata": {
+                "description": "true: Windows OS | false: Linux"
+            }
+        },
+        "numberOfInstances": {
+            "type": "int",
+            "defaultValue": 1
+        },
+        "vmsize": {
+            "type": "string",
+            "defaultValue": "Standard_DS1_v2",
+            "allowedValues": [
+                "Standard_B1ls",
+                "Standard_B1s",
+                "Standard_DS1_v2",
+                "Standard_D2s_v3"
+            ],
+            "metadata": {
+                "description": "VM SKU"
+            }
+        }
+    },
+    "variables": {
+        "companyId": "[parameters('companyId')]",
+        "location": "[parameters('location')]",
+        "nsgName": "nsg3",
+        "vNetName": "vnet3",
+        "IPFirstOctet": "10",
+        "IPSecondOctet": "[variables('companyId')]",
+        "IPThirdOctet": "3",
+        "vNetAddressPrefix": "[concat(variables('IPFirstOctet'),'.', variables('IPSecondOctet'),'.', variables('IPThirdOctet'),'.0/24')]",
+        "vNetSubnet1Name": "subnet1",
+        "vNetSubnet1Prefix": "[concat(variables('IPFirstOctet'),'.', variables('IPSecondOctet'),'.', variables('IPThirdOctet'),'.0/27')]",
+        "vNetSubnet2Name": "subnet2",
+        "vNetSubnet2Prefix": "[concat(variables('IPFirstOctet'),'.', variables('IPSecondOctet'),'.', variables('IPThirdOctet'),'.32/27')]",
+        "vmName": "vm3",
+        "os": {
+            "windows": {
+                "imagePublisher": "MicrosoftWindowsServer",
+                "imageOffer": "WindowsServer",
+                "imageSKU": "2019-Datacenter",
+                "vmsize": "[parameters('vmsize')]"
+            },
+            "centos": {
+                "imagePublisher": "openlogic",
+                "imageOffer": "CentOS",
+                "imageSKU": "7.6",
+                "vmsize": "[parameters('vmsize')]"
+            }
+        },
+        "vmStorageAccountType": "Premium_LRS",
+        "adminUsername": "[parameters('adminUsername')]",
+        "adminPassword": "[parameters('adminPassword')]",
+        "isWindowsOS": "[parameters('isWindowsOS')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2019-09-01",
+            "name": "[variables('nsgName')]",
+            "location": "[variables('location')]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "SSH-rule",
+                        "properties": {
+                            "description": "allow SSH",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 500,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "RDP-rule",
+                        "properties": {
+                            "description": "allow RDP",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "3389",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 600,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2019-09-01",
+            "name": "[variables('vNetName')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
+            ],
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[variables('vNetAddressPrefix')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[variables('vNetSubnet1Name')]",
+                        "properties": {
+                            "addressPrefix": "[variables('vNetSubnet1Prefix')]",
+                            "privateLinkServiceNetworkPolicies": "Disabled",
+                            "privateEndpointNetworkPolicies": "Disabled"
+                        }
+                    },
+                    {
+                        "name": "[variables('vNetSubnet2Name')]",
+                        "properties": {
+                            "addressPrefix": "[variables('vNetSubnet2Prefix')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "2019-08-01",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[concat(variables('vmName'), '-pubIP')]",
+            "comments": "public IP of the Azure VMs",
+            "location": "[variables('location')]",
+            "sku": {
+                "name": "Basic"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic"
+            }
+        },
+        {
+            "apiVersion": "2019-08-01",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[concat(variables('vmName'),'-nic')]",
+            "comments": "NIC of the Azure VM",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('vNetName'))]",
+                "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('vmName'),'-pubIP'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('vmName'), '-pubIP' ))]"
+                            },
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vNetName'), variables('vNetSubnet2Name') )]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[variables('vmName')]",
+            "apiVersion": "2019-03-01",
+            "comments": "spin up Azure VM",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('vmName'), '-nic')  )]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[if(variables('isWindowsOS'),variables('os').windows.vmsize,variables('os').centos.vmsize)]"
+                },
+                "osProfile": {
+                    "computerName": "[variables('vmName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[if(variables('isWindowsOS'),variables('os').windows.imagePublisher,variables('os').centos.imagePublisher)]",
+                        "offer": "[if(variables('isWindowsOS'),variables('os').windows.imageOffer,variables('os').centos.imageOffer)]",
+                        "sku": "[if(variables('isWindowsOS'),variables('os').windows.imageSKU,variables('os').centos.imageSKU)]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "createOption": "FromImage",
+                        "name": "[concat(variables('vmName'), '-OS')]",
+                        "managedDisk": {
+                            "storageAccountType": "[if(contains(toUpper(if(variables('isWindowsOS'),variables('os').windows.vmsize,variables('os').centos.vmsize)), 'S'),'Premium_LRS','Standard_LRS')]"
+                        }
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('vmName'), '-nic'))]"
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

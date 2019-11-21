@@ -1,0 +1,129 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "companyId": {
+            "type": "string",
+            "metadata": {
+                "description": "numeric identification of the company"
+            }
+        },
+        "location3": {
+            "type": "string",
+            "metadata": {
+                "description": "azure region where is deployed the vnet3"
+            }
+        },
+        "resourceGroupVNet3": {
+            "type": "string",
+            "metadata": {
+                "description": "resouce group vnet3"
+            }
+        },
+        "vnet3Name": {
+            "type": "string",
+            "metadata": {
+                "description": "Name vnet3"
+            }
+        }
+    },
+    "variables": {
+        "companyId": "[parameters('companyId')]",
+        "location3": "[parameters('location3')]",
+        "vnet3Name": "[parameters('vnet3Name')]",
+        "resourceGroupVNet3": "[parameters('resourceGroupVNet3')]",
+
+        "vNet1IPFirstOctet": "10",
+        "vNet1IPSecondOctet": "[variables('companyId')]",
+        "vNet1IPThirdOctet": "1",
+        "lbFrontEndIP1": "[concat(variables('vNet1IPFirstOctet'),'.', variables('vNet1IPSecondOctet'),'.', variables('vNet1IPThirdOctet'),'.5')]",
+        "firewallInternalIP": "[concat(variables('vNet2IPFirstOctet'),'.', variables('vNet2IPSecondOctet'),'.', variables('vNet2IPThirdOctet'),'.68')]",
+        "vNet2IPFirstOctet": "10",
+        "vNet2IPSecondOctet": "[variables('companyId')]",
+        "vNet2IPThirdOctet": "2",
+        "vNet2AddressPrefix": "[concat(variables('vNet2IPFirstOctet'),'.', variables('vNet2IPSecondOctet'),'.', variables('vNet2IPThirdOctet'),'.0/24')]",
+        "vNet3IPFirstOctet": "10",
+        "vNet3IPSecondOctet": "[variables('companyId')]",
+        "vNet3IPThirdOctet": "3",
+        "vNet3AddressPrefix": "[concat(variables('vNet3IPFirstOctet'),'.', variables('vNet3IPSecondOctet'),'.', variables('vNet3IPThirdOctet'),'.0/24')]",
+        "vNet3Subnet2Name": "subnet2",
+        "vNet3Subnet2Prefix": "[concat(variables('vNet3IPFirstOctet'),'.', variables('vNet3IPSecondOctet'),'.', variables('vNet3IPThirdOctet'),'.32/27')]",
+
+        "vNet1dmzSubnetName": "dmzSubnet",
+        "vNet1dmzSubnetPrefix": "[concat(variables('vNet1IPFirstOctet'),'.', variables('vNet1IPSecondOctet'),'.', variables('vNet1IPThirdOctet'),'.192/27')]",
+        "RT-vnet3-subnet2": {
+            "name": "RT-vnet3",
+            "location": "[variables('location3')]",
+            "nameRTEntry1": "rt-to-vnet2",
+            "destinationAddressPrefix1": "[variables('vNet2AddressPrefix')]",
+            "nextHopType1": "VirtualAppliance",
+            "nextHopIpAddress1": "[variables('lbFrontEndIP1')]",
+            "nameRTEntry2": "rt-to-hub-dmz",
+            "destinationAddressPrefix2": "[variables('vNet1dmzSubnetPrefix')]",
+            "nextHopType2": "VirtualAppliance",
+            "nextHopIpAddress2": "[variables('lbFrontEndIP1')]"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/routeTables",
+            "name": "[variables('RT-vnet3-subnet2').name]",
+            "apiVersion": "2019-09-01",
+            "location": "[variables('location3')]",
+            "dependsOn": [],
+            "comments": "RT-hub vnet-subnet DMZ",
+            "properties": {
+                "routes": [
+                    {
+                        "name": "[variables('RT-vnet3-subnet2').nameRTEntry1]",
+                        "properties": {
+                            "addressPrefix": "[variables('RT-vnet3-subnet2').destinationAddressPrefix1]",
+                            "nextHopType": "[variables('RT-vnet3-subnet2').nextHopType1]",
+                            "nextHopIpAddress": "[variables('RT-vnet3-subnet2').nextHopIpAddress1]"
+                        }
+                    },
+                    {
+                        "name": "[variables('RT-vnet3-subnet2').nameRTEntry2]",
+                        "properties": {
+                            "addressPrefix": "[variables('RT-vnet3-subnet2').destinationAddressPrefix2]",
+                            "nextHopType": "[variables('RT-vnet3-subnet2').nextHopType2]",
+                            "nextHopIpAddress": "[variables('RT-vnet3-subnet2').nextHopIpAddress2]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "2019-08-01",
+            "name": "adding-RT-to-vnet3",
+            "type": "Microsoft.Resources/deployments",
+            "subscriptionId": "[subscription().subscriptionId]",
+            "resourceGroup": "[variables('resourceGroupVNet3')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/routeTables', variables('RT-vnet3-subnet2').name)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+                    "contentVersion": "1.0.0.0",
+                    "variables": {},
+                    "resources": [
+                        {
+                            "apiVersion": "2019-09-01",
+                            "type": "Microsoft.Network/virtualNetworks/subnets",
+                            "name": "[concat( variables('vnet3Name'),'/', variables('vNet3Subnet2Name') )]",
+                            "location": "[variables('location3')]",
+                            "properties": {
+                                "addressPrefix": "[variables('vNet3Subnet2Prefix')]",
+                                "routeTable": {
+                                    "id": "[resourceId('Microsoft.Network/routeTables', variables('RT-vnet3-subnet2').name)]"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

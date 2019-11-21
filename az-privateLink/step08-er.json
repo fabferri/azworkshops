@@ -1,0 +1,169 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "companyId": {
+            "type": "string",
+            "metadata": {
+                "description": "numeric identification of the company"
+            }
+        },
+        "location": {
+            "type": "string",
+            "allowedValues": [
+                "eastus",
+                "eastus2",
+                "centralus",
+                "southcentralus",
+                "northcentralus",
+                "westcentralus",
+                "westus",
+                "westus2",
+                "canadacentral",
+                "canadaeast",
+                "westeurope",
+                "northeurope",
+                "uksouth",
+                "ukwest",
+                "francesouth",
+                "francecentral",
+                "southindia",
+                "centralindia",
+                "westindia",
+                "eastasia",
+                "southeastasia",
+                "japaneast",
+                "japanwest",
+                "australiaeast",
+                "australiasoutheast",
+                "australiacentral",
+                "australiacentral2"
+            ],
+            "metadata": {
+                "description": "azure region where is deployed the first VNet"
+            }
+        },
+        "resourceGroupVNet1": {
+            "type": "string",
+            "metadata": {
+                "description": "resource group vnet1"
+            }
+        },
+        "vnet1Name":{
+            "type": "string",
+            "metadata": {
+                "description": "Name vnet1"
+            }
+        },
+        "gatewaySku": {
+            "type": "string",
+            "defaultValue": "Standard",
+            "allowedValues": [
+                "Standard",
+                "HighPerformance",
+                "UltraPerformance"
+            ],
+            "metadata": {
+                "description": "The SKU for the ExpressRoute Gateway"
+            }
+        },
+        "erCircuitId":{
+            "type": "string",
+            "metadata": {
+                "description": "ExpressRoute circuit Id"
+            }
+        },
+        "authorizationKey":{
+            "type": "string",
+            "metadata": {
+                "description": "ExpressRoute authorization code"
+            }
+        },
+        "erCircuitName":{
+            "type": "string",
+            "metadata": {
+                "description": "ExpressRoute circuit name"
+            }
+        }
+    },
+    "variables": {
+        "companyId": "[parameters('companyId')]",
+        "location": "[parameters('location')]",
+        "resourceGroupVNet1": "[parameters('resourceGroupVNet1')]",
+        "gatewayName": "er-gtw1",
+        "gatewayPublicIPName": "er-pubIP",
+        "gatewaySku": "[parameters('gatewaySku')]",
+        "vnet1Name": "[parameters('vnet1Name')]",
+        "vnet1Id": "[resourceId(subscription().subscriptionId, variables('resourceGroupVNet1'), 'Microsoft.Network/virtualNetworks', variables('vnet1Name'))]",
+        "vnet1GtwId": "[resourceId(subscription().subscriptionId, variables('resourceGroupVNet1'), 'Microsoft.Network/virtualNetworks/subnets', variables('vnet1Name'),'GatewaySubnet')]",
+        "authorizationKey": "[parameters('authorizationKey')]",
+        "erCircuitId": "[parameters('erCircuitId')]",
+        "erCircuitName": "[parameters('erCircuitName')]",
+        "connectionName": "[concat('conn-',variables('erCircuitName'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[variables('gatewayPublicIPName')]",
+            "apiVersion": "2019-09-01",
+            "location": "[variables('location')]",
+            "comments": "public IP for ExpressRoute Gateway in the vnet1",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic"
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworkGateways",
+            "name": "[variables('gatewayName')]",
+            "apiVersion": "2019-09-01",
+            "location": "[variables('location')]",
+            "comments": "ExpressRoute Gateway for vnet1",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', variables('gatewayPublicIPName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[variables('vnet1GtwId')]"
+                            },
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('gatewayPublicIPName'))]"
+                            }
+                        },
+                        "name": "gwipconf-1"
+                    }
+                ],
+                "gatewayType": "ExpressRoute",
+                "sku": {
+                    "name": "[variables('gatewaySku')]",
+                    "tier": "[variables('gatewaySku')]"
+                },
+                "vpnType": "RouteBased"
+            }
+        },
+        {
+            "type": "Microsoft.Network/connections",
+            "apiVersion": "2019-09-01",
+            "name": "[variables('connectionName')]",
+            "location": "[variables('location')]",
+            "comments": "create the connection between the vnet1 and the ER circuit",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworkGateways', variables('gatewayName')  )]"
+            ],
+            "properties": {
+                "virtualNetworkGateway1": {
+                    "id": "[resourceId('Microsoft.Network/virtualNetworkGateways', variables('gatewayName') )]"
+                },
+                "connectionType": "ExpressRoute",
+                "routingWeight": 0,
+                "authorizationKey": "[variables('authorizationKey')]",
+                "peer": {
+                    "id": "[variables('erCircuitId')]"
+                }
+            }
+        }
+    ]
+}

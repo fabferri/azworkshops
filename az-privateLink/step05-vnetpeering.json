@@ -1,0 +1,217 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location1": {
+            "type": "string",
+            "metadata": {
+                "description": "azure region where is deployed the vnet1"
+            }
+        },
+        "location2": {
+            "type": "string",
+            "metadata": {
+                "description": "azure region where is deployed the vnet2"
+            }
+        },
+        "location3": {
+            "type": "string",
+            "metadata": {
+                "description": "azure region where is deployed the vnet3"
+            }
+        },
+        "resourceGroupVNet1": {
+            "type": "string",
+            "metadata": {
+                "description": "resource group vnet1"
+            }
+        },
+        "resourceGroupVNet2": {
+            "type": "string",
+            "metadata": {
+                "description": "resource group vnet2"
+            }
+        },
+        "resourceGroupVNet3": {
+            "type": "string",
+            "metadata": {
+                "description": "resouce group vnet3"
+            }
+        },
+        "vnet1Name": {
+            "type": "string",
+            "metadata": {
+                "description": "Name vnet1"
+            }
+        },
+        "vnet2Name": {
+            "type": "string",
+            "metadata": {
+                "description": "Name vnet2"
+            }
+        },
+        "vnet3Name": {
+            "type": "string",
+            "metadata": {
+                "description": "Name vnet3"
+            }
+        }
+    },
+    "variables": {
+        "location1": "[parameters('location1')]",
+        "location2": "[parameters('location2')]",
+        "location3": "[parameters('location3')]",
+        "vnet1Name": "[parameters('vnet1Name')]",
+        "vnet2Name": "[parameters('vnet2Name')]",
+        "vnet3Name": "[parameters('vnet3Name')]",
+        "resourceGroupVNet1": "[parameters('resourceGroupVNet1')]",
+        "resourceGroupVNet2": "[parameters('resourceGroupVNet2')]",
+        "resourceGroupVNet3": "[parameters('resourceGroupVNet3')]",
+        "peeringNamevnet1Tovnet2": "[concat(variables('vnet1Name'), '-to-' ,variables('vnet2Name'))]",
+        "peeringNamevnet2Tovnet1": "[concat(variables('vnet2Name'), '-to-' ,variables('vnet1Name'))]",
+        "peeringNamevnet1Tovnet3": "[concat(variables('vnet1Name'), '-to-' ,variables('vnet3Name'))]",
+        "peeringNamevnet3Tovnet1": "[concat(variables('vnet3Name'), '-to-' ,variables('vnet1Name'))]",
+        "vnet1Id": "[resourceId(subscription().subscriptionId, variables('resourceGroupVNet1'), 'Microsoft.Network/virtualNetworks', variables('vnet1Name'))]",
+        "vnet2Id": "[resourceId(subscription().subscriptionId, variables('resourceGroupVNet2'), 'Microsoft.Network/virtualNetworks', variables('vnet2Name'))]",
+        "vnet3Id": "[resourceId(subscription().subscriptionId, variables('resourceGroupVNet3'), 'Microsoft.Network/virtualNetworks', variables('vnet3Name'))]"
+
+    },
+    "resources": [
+        {
+            "apiVersion": "2019-08-01",
+            "name": "[variables('peeringNamevnet1Tovnet2')]",
+            "type": "Microsoft.Resources/deployments",
+            "subscriptionId": "[subscription().subscriptionId]",
+            "resourceGroup": "[variables('resourceGroupVNet1')]",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+                    "contentVersion": "1.0.0.0",
+                    "variables": {},
+                    "resources": [
+                        {
+                            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+                            "name": "[concat(variables('vnet1Name'),'/',variables('peeringNamevnet1Tovnet2'))]",
+                            "apiVersion": "2019-09-01",
+                            "location": "[variables('location1')]",
+                            "dependsOn": [],
+                            "comments": "This is the peering from vnet1 to vnet2",
+                            "properties": {
+                                "allowVirtualNetworkAccess": true,
+                                "allowForwardedTraffic": true,
+                                "allowGatewayTransit": false,
+                                "useRemoteGateways": false,
+                                "remoteVirtualNetwork": {
+                                    "id": "[variables('vnet2Id')]"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "apiVersion": "2019-08-01",
+            "name": "[variables('peeringNamevnet2Tovnet1')]",
+            "type": "Microsoft.Resources/deployments",
+            "subscriptionId": "[subscription().subscriptionId]",
+            "resourceGroup": "[variables('resourceGroupVNet2')]",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+                    "contentVersion": "1.0.0.0",
+                    "variables": {},
+                    "resources": [
+                        {
+                            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+                            "name": "[concat(variables('vnet2Name'),'/',variables('peeringNamevnet2Tovnet1'))]",
+                            "apiVersion": "2019-09-01",
+                            "location": "[variables('location1')]",
+                            "dependsOn": [],
+                            "comments": "This is the peering from vnet2 to vnet1",
+                            "properties": {
+                                "allowVirtualNetworkAccess": true,
+                                "allowForwardedTraffic": true,
+                                "allowGatewayTransit": false,
+                                "useRemoteGateways": false,
+                                "remoteVirtualNetwork": {
+                                    "id": "[variables('vnet1Id')]"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "apiVersion": "2019-08-01",
+            "name": "[variables('peeringNamevnet1Tovnet3')]",
+            "type": "Microsoft.Resources/deployments",
+            "subscriptionId": "[subscription().subscriptionId]",
+            "resourceGroup": "[variables('resourceGroupVNet1')]",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+                    "contentVersion": "1.0.0.0",
+                    "variables": {},
+                    "resources": [
+                        {
+                            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+                            "name": "[concat(variables('vnet1Name'),'/',variables('peeringNamevnet1Tovnet3'))]",
+                            "apiVersion": "2019-09-01",
+                            "location": "[variables('location1')]",
+                            "dependsOn": [],
+                            "comments": "This is the peering from vnet1 to vnet3",
+                            "properties": {
+                                "allowVirtualNetworkAccess": true,
+                                "allowForwardedTraffic": true,
+                                "allowGatewayTransit": false,
+                                "useRemoteGateways": false,
+                                "remoteVirtualNetwork": {
+                                    "id": "[variables('vnet3Id')]"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "apiVersion": "2019-08-01",
+            "name": "[variables('peeringNamevnet3Tovnet1')]",
+            "type": "Microsoft.Resources/deployments",
+            "subscriptionId": "[subscription().subscriptionId]",
+            "resourceGroup": "[variables('resourceGroupVNet3')]",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+                    "contentVersion": "1.0.0.0",
+                    "variables": {},
+                    "resources": [
+                        {
+                            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+                            "name": "[concat(variables('vnet3Name'),'/',variables('peeringNamevnet3Tovnet1'))]",
+                            "apiVersion": "2019-09-01",
+                            "location": "[variables('location1')]",
+                            "dependsOn": [],
+                            "comments": "This is the peering from vnet3 to vnet1",
+                            "properties": {
+                                "allowVirtualNetworkAccess": true,
+                                "allowForwardedTraffic": true,
+                                "allowGatewayTransit": false,
+                                "useRemoteGateways": false,
+                                "remoteVirtualNetwork": {
+                                    "id": "[variables('vnet1Id')]"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}
