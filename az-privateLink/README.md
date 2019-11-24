@@ -35,13 +35,15 @@ Here an Azure networking workshop based on list of ARM templates (.json files). 
 | `step10-udr-vnet2.ps1` |`step10-udr-vnet2.json`|create the UDR in the subnet2 of vnet2|
 | `step11-udr-vnet3.ps1`|`step11-udr-vnet3.json`| create the UDR in the subnet2 of vnet3|
 
-> NOTE1
+> ***NOTE1***
+>
 >Before running the step1,step2, step3 and step4 set your own values in the variables  **ADMINISTRATOR_USERNAME** _and_ **ADMINISTRATOR_PASSWORD**
 
-> NOTE2
-> <span style="color:blue">All the steps require a text file named init.txt with key value pair as companyId=12</span>
-> <span style="color:blue">companyId is they key and it can't be changed.</span>
-> <span style="color:blue">the value assigned to the key is an integer. The value is pluged in the thrird octect of IP adress schema of all workshop</span>
+> ***NOTE2***
+>
+> All the steps require a text file named **init.txt** with key-value pair as companyId=10
+> **companyId** is they key and it can't be changed.
+> The value assigned to the key is an integer. The value is pluged in the thrird octect of IP adress schema of all workshop.
 
 
 The network diagram is shown below:
