@@ -1,5 +1,5 @@
 <properties
-pageTitle= 'Example of workshop with mix of Azure networking tecnology'
+pageTitle= 'Example of workshop with mix of Azure networking technology'
 description= "Workshop with Azure private link, VNet peering, ExpressRoute"
 documentationcenter: na
 services=""
@@ -18,39 +18,25 @@ editor=""/>
    ms.author="fabferri" />
 
 ## Azure networking workshop: private link, VNet peering, ExpressRoute
-Here a workshop of Azure networking components.
-The workshop is based on list of ARM templates (.json files); each file can be run by powershell (with same name):
+Here an Azure networking workshop based on list of ARM templates (.json files). Each ARM template deploys a list of network components and VMs; the ARM is executed by running powershell script, with same name:
 
-* **step01-hubvnet.ps1** creates the hub vnet with different subnets: 
-   - frontend subnet and backedn subnet to deploy an internal load balacer in high availability port
-   - two Azure VMs with ip forwarding enabled
-   - a bastion host
-   - an Azure firewall
-   - a dmz subnet with an Azure VM
-  
-  *Before running the step1, change the* **ADMINISTROR_USERNAME** *and* **ADMINISTRATOR_PASSWORD**
 
-* **step02-vnet2.ps1**: it create the vnet2 with two private endpoints, one to access to the SQL DB and another one to access to a storage account
-  
-  *Before running the step2, change the* **ADMINISTROR_USERNAME** *and* **ADMINISTRATOR_PASSWORD**
+| powershell script  | ARM template              | Description                   |
+| :----------------: | :------------------------:|:-----------------------------:|
+|`step01-hubvnet.ps1`|`step01-hubvnet.json` | - creates the hub vnet with different subnets:<br>- frontend subnet and backedn subnet to deploy an internal load balacer in high availability port<br>- two Azure VMs with ip forwarding enabled<br>- a bastion host <br>- an Azure firewall<br>- a dmz subnet with an Azure VM|
+|`step02-vnet2.ps1`| `step02-vnet2.json`| it create the vnet2 with two private endpoints, one to access to the SQL DB and another one to access to a storage account|
+|`step03-vnet3.ps1`| `step03-vnet3.json`|it creates the vnet3|
+|`step04-servicevnet.ps1`|`step04-servicevnet.json`| it create the service vnet with a service link, load balancer and two VMs|
+|`step05-vnetpeering.ps1`| `step05-vnetpeering.json`| it create two vnet peering: <br>- vnet peering between hub-vnet and vnet2<br>- vnet peering between hub-vnet and vnet3|
+| `step06-vnet3-priv-endpoint.ps1`| `step06-vnet3-priv-endpoint.json`| it create the private endpoint in vnet3 to access to the service provider deployed in service vnet |
+| `step07-vnet2-priv-endpoint.ps1`|`step07-vnet2-priv-endpoint.json`| it create the private endpoint in vnet2 to access to the service provider deployed in service vnet|
+| `step08-er.ps1`| |create an ExpressRoute gateway and connection with the existing ExpressRoute circuit. the ExpressRoute circuit is deployed in different Azure subscription. the ARM template requires an authorization code to link to the existing Expressroute circuit.|
+| `step09-udr-hubvnet.ps1`|`step09-udr-hubvnet.json`| creates the UDR in the dmzsubnet of hub vnet|
+| `step10-udr-vnet2.ps1` |`step10-udr-vnet2.json`|create the UDR in the subnet2 of vnet2|
+| `step11-udr-vnet3.ps1`|`step11-udr-vnet3.json`| create the UDR in the subnet2 of vnet3|
 
-* **step03-vnet3.ps1**: it creates the vnet3
+*Before running the step1,step2, step3 and step4 change the* **ADMINISTROR_USERNAME** *and* **ADMINISTRATOR_PASSWORD**
 
-  *Before running the step3, change the* **ADMINISTROR_USERNAME** *and* **ADMINISTRATOR_PASSWORD**
-
-* **step04-servicevnet.ps1**: it create the service vnet with a service link, load balancer and two VMs 
-
-  *Before running the step4, change the* **ADMINISTROR_USERNAME** *and* **ADMINISTRATOR_PASSWORD**
-
-* **step05-vnetpeering.ps1**: it create two vnet peering:
-   - vnet peering between hub-vnet and vnet2
-   - vnet peering between hub-vnet and vnet3
-* **step06-vnet3-priv-endpoint.ps1**: it create the private endpoint in vnet3 to access to the service provider deployed in service vnet
-* **step07-vnet2-priv-endpoint.ps1**: it create the private endpoint in vnet2 to access to the service provider deployed in service vnet
-* **step08-er.ps1**: create an ExpressRoute gateway and connection with the existing ExpressRoute circuit. the ExpressRoute circuit is deployed in different Azure subscription. the ARM template requires an authorization code to link to the existing Expressroute circuit.
-* **step09-udr-hubvnet.ps1**: creates the UDR in the dmzsubnet of hub vnet 
-* **step10-udr-vnet2.ps1** :create the UDR in the subnet2 of vnet2
-* **step11-udr-vnet3.ps1**: create the UDR in the subnet2 of vnet3
 
 
 The network diagram is shown below:
@@ -60,7 +46,7 @@ The network diagram is shown below:
 
 [![2]][2]
 
-### <a name="step1"></a>1. Actions after execution of step1:
+### <a name="step1"></a>1. Adviced actions after execution of step1:
 1. connect to the vmdmz via bastion
 2. browse to http:// 10.X.1.36
 3. browse to http:// 10.X.1.37
@@ -69,7 +55,7 @@ The network diagram is shown below:
 6. Check the backend pool of ilb: you should see nva1, nva2 as backed VMs 
 7. Enable the icmp echo in vmdmz (windows firewall)
 
-### <a name="step2"></a>2. Actions after execution of step2:
+### <a name="step2"></a>2. Adviced actions after execution of step2:
 
 1. connect to the vm0
 2. enable icmp echo in windows firewall
@@ -91,7 +77,7 @@ The network diagram is shown below:
    https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver15
 7. By Storage Explorer connect to the storage account
 8. By SQL Management Studio connect to the SQL server 
-9. Enable the icmp echo in vm0 (windows firewall)
+9. In windows firewall, enable the icmp echo in vm0
 
 
 <!--Image References-->
