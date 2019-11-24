@@ -46,7 +46,10 @@ The network diagram is shown below:
 
 [![2]][2]
 
-### <a name="step1"></a>1. Adviced actions after execution of step1:
+### <a name="step1"></a>1. Step1: adviced actions after the deployment
+
+[![3]][3]
+
 1. connect to the vmdmz via bastion
 2. browse to http:// 10.X.1.36
 3. browse to http:// 10.X.1.37
@@ -55,7 +58,11 @@ The network diagram is shown below:
 6. Check the backend pool of ilb: you should see nva1, nva2 as backed VMs 
 7. Enable the icmp echo in vmdmz (windows firewall)
 
-### <a name="step2"></a>2. Adviced actions after execution of step2:
+
+
+### <a name="step2"></a>2. Step2: adviced actions after the deployment
+
+[![4]][4]
 
 1. connect to the vm0
 2. enable icmp echo in windows firewall
@@ -79,11 +86,22 @@ The network diagram is shown below:
 8. By SQL Management Studio connect to the SQL server 
 9. In windows firewall, enable the icmp echo in vm0
 
+### <a name="step2"></a>2. Step3: adviced actions after the deployment
+
+[![5]][5]
+
+### <a name="step2"></a>2. Step4: adviced actions after the deployment
+
+[![6]][6]
 
 <!--Image References-->
 
 [1]: ./media/network-diagram.png "network diagram"
 [2]: ./media/network-diagram-details.png "network diagram with details"
+[3]: ./media/step01.png "network diagram -step01"
+[4]: ./media/step02.png "network diagram -step02"
+[5]: ./media/step03.png "network diagram -step03"
+[6]: ./media/step04.png "network diagram -step04"
 
 <!--Link References-->
 
