@@ -35,7 +35,7 @@ Here an Azure networking workshop based on list of ARM templates (.json files). 
 | `step10-udr-vnet2.ps1` |`step10-udr-vnet2.json`|create the UDR in the subnet2 of vnet2|
 | `step11-udr-vnet3.ps1`|`step11-udr-vnet3.json`| create the UDR in the subnet2 of vnet3|
 
-*Before running the step1,step2, step3 and step4 set your own value to the variables * **ADMINISTRATOR_USERNAME** *and* **ADMINISTRATOR_PASSWORD**
+*Before running the step1,step2, step3 and step4 set your own values in the variables * **ADMINISTRATOR_USERNAME** _and_ **ADMINISTRATOR_PASSWORD**
 
 
 
@@ -50,7 +50,7 @@ The network diagram is shown below:
 1. connect to the vmdmz via bastion
 2. browse to http:// 10.X.1.36
 3. browse to http:// 10.X.1.37
-4. connect via SSH to the nva0 and run the command: **sysctl net.ipv4.ip_forward** to check the ip forwarding has been enabled
+4. connect via SSH to the nva0 and run the command: **sysctl net.ipv4.ip_forward** to check ip forwarding has been enabled (value 1: IP forwarding enabled, value 0: IP forwarding enabled)
 5. Check the ilb has the right frontend IP
 6. Check the backend pool of ilb: you should see nva1, nva2 as backed VMs 
 7. Enable the icmp echo in vmdmz (windows firewall)
