@@ -22,7 +22,7 @@ Here an Azure networking workshop based on list of ARM templates (.json files). 
 
 
 | powershell script  | ARM template              | Description                   |
-| :----------------: | :------------------------:|:------------------------------|
+| :----------------- | :------------------------ |:----------------------------- |
 |`step01-hubvnet.ps1`|`step01-hubvnet.json` | - creates the hub vnet with different subnets:<br>- frontend subnet and backedn subnet to deploy an internal load balacer in high availability port<br>- two Azure VMs with ip forwarding enabled<br>- a bastion host <br>- an Azure firewall<br>- a dmz subnet with an Azure VM|
 |`step02-vnet2.ps1`| `step02-vnet2.json`| it create the vnet2 with two private endpoints, one to access to the SQL DB and another one to access to a storage account|
 |`step03-vnet3.ps1`| `step03-vnet3.json`|it creates the vnet3|
