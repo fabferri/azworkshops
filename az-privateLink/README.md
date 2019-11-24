@@ -42,7 +42,9 @@ Here an Azure networking workshop based on list of ARM templates (.json files). 
 > ***NOTE2***
 >
 > All the steps require a text file named **init.txt** with key-value pair as companyId=10
+>
 > **companyId** is they key and it can't be changed.
+>
 > The value assigned to the key is an integer. The value is pluged in the thrird octect of IP adress schema of all workshop.
 
 
