@@ -30,7 +30,7 @@ Here an Azure networking workshop based on list of ARM templates (.json files). 
 |`step05-vnetpeering.ps1`| `step05-vnetpeering.json`| it create two vnet peering: <br>- vnet peering between hub-vnet and vnet2<br>- vnet peering between hub-vnet and vnet3|
 | `step06-vnet3-priv-endpoint.ps1`| `step06-vnet3-priv-endpoint.json`| it create the private endpoint in vnet3 to access to the service provider deployed in service vnet |
 | `step07-vnet2-priv-endpoint.ps1`|`step07-vnet2-priv-endpoint.json`| it create the private endpoint in vnet2 to access to the service provider deployed in service vnet|
-| `step08-er.ps1`| |create an ExpressRoute gateway and connection with the existing ExpressRoute circuit. the ExpressRoute circuit is deployed in different Azure subscription. the ARM template requires an authorization code to link to the existing Expressroute circuit.|
+| `step08-er.ps1`| `step08-er.json`|create an ExpressRoute gateway and connection with the existing ExpressRoute circuit. the ExpressRoute circuit is deployed in different Azure subscription. the ARM template requires an authorization code to link to the existing Expressroute circuit.|
 | `step09-udr-hubvnet.ps1`|`step09-udr-hubvnet.json`| creates the UDR in the dmzsubnet of hub vnet|
 | `step10-udr-vnet2.ps1` |`step10-udr-vnet2.json`|create the UDR in the subnet2 of vnet2|
 | `step11-udr-vnet3.ps1`|`step11-udr-vnet3.json`| create the UDR in the subnet2 of vnet3|
