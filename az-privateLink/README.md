@@ -35,7 +35,7 @@ Here an Azure networking workshop based on list of ARM templates (.json files). 
 | `step10-udr-vnet2.ps1` |`step10-udr-vnet2.json`|create the UDR in the subnet2 of vnet2|
 | `step11-udr-vnet3.ps1`|`step11-udr-vnet3.json`| create the UDR in the subnet2 of vnet3|
 
-*Before running the step1,step2, step3 and step4 change the* **ADMINISTROR_USERNAME** *and* **ADMINISTRATOR_PASSWORD**
+*Before running the step1,step2, step3 and step4 set your own value to the variables * **ADMINISTRATOR_USERNAME** *and* **ADMINISTRATOR_PASSWORD**
 
 
 
