@@ -45,7 +45,7 @@ Here an Azure networking workshop based on list of ARM templates (.json files). 
 >
 > **companyId** is they key and it can't be changed.
 >
-> The value assigned to the key is an integer. The value is pluged in the thrird octect of IP adress schema of all workshop.
+> The value assigned to the key is an integer. The value is pluged in the third octect of the IP addresses of the workshop.
 
 
 The network diagram is shown below:
@@ -55,7 +55,7 @@ The network diagram is shown below:
 
 [![2]][2]
 
-## <a name="step1"></a>1. Step1: adviced actions after the deployment
+## <a name="step1"></a>Step01: some checks after the deployment
 
 [![3]][3]
 
@@ -69,7 +69,7 @@ The network diagram is shown below:
 
 
 
-## <a name="step2"></a>2. Step2: adviced actions after the deployment
+## <a name="step2"></a>Step02: some checks after the deployment
 
 [![4]][4]
 
@@ -95,13 +95,41 @@ The network diagram is shown below:
 8. By SQL Management Studio connect to the SQL server 
 9. In windows firewall, enable the icmp echo in vm0
 
-## <a name="step2"></a>2. Step3: adviced actions after the deployment
+## <a name="step3"></a>Step03: some checks after the deployment
 
 [![5]][5]
 
-## <a name="step2"></a>2. Step4: adviced actions after the deployment
+## <a name="step4"></a>Step04: some checks the deployment
 
 [![6]][6]
+
+## <a name="step5"></a>Step05: some checks the deployment
+
+[![7]][7]
+
+## <a name="step6"></a>Step06: some checks the deployment
+
+[![8]][8]
+
+## <a name="step7"></a>Step07: some checks the deployment
+
+[![9]][9]
+
+## <a name="step8"></a>Step08: some checks the deployment
+
+[![10]][10]
+
+## <a name="step9"></a>Step09: some checks the deployment
+
+[![11]][11]
+
+## <a name="step10"></a>Step10: some checks the deployment
+
+[![12]][12]
+
+## <a name="step11"></a>Step11: some checks the deployment
+
+[![13]][13]
 
 <!--Image References-->
 
@@ -111,6 +139,13 @@ The network diagram is shown below:
 [4]: ./media/step02.png "network diagram -step02"
 [5]: ./media/step03.png "network diagram -step03"
 [6]: ./media/step04.png "network diagram -step04"
+[7]: ./media/step05.png "network diagram -step05"
+[8]: ./media/step06.png "network diagram -step06"
+[9]: ./media/step07.png "network diagram -step07"
+[10]: ./media/step08.png "network diagram -step08"
+[11]: ./media/step09.png "network diagram -step09"
+[12]: ./media/step10.png "network diagram -step10"
+[13]: ./media/step11.png "network diagram -step11"
 
 <!--Link References-->
 
