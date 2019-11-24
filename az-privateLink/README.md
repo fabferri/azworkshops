@@ -17,7 +17,7 @@ editor=""/>
    ms.date="21/11/2019"
    ms.author="fabferri" />
 
-## Azure networking workshop: private link, VNet peering, ExpressRoute
+# Azure networking workshop: private link, VNet peering, ExpressRoute
 Here an Azure networking workshop based on list of ARM templates (.json files). Each ARM template deploys a list of network components and VMs; the ARM is executed by running powershell script, with same name:
 
 
@@ -35,8 +35,13 @@ Here an Azure networking workshop based on list of ARM templates (.json files). 
 | `step10-udr-vnet2.ps1` |`step10-udr-vnet2.json`|create the UDR in the subnet2 of vnet2|
 | `step11-udr-vnet3.ps1`|`step11-udr-vnet3.json`| create the UDR in the subnet2 of vnet3|
 
-*Before running the step1,step2, step3 and step4 set your own values in the variables * **ADMINISTRATOR_USERNAME** _and_ **ADMINISTRATOR_PASSWORD**
+> NOTE1
+>Before running the step1,step2, step3 and step4 set your own values in the variables  **ADMINISTRATOR_USERNAME** _and_ **ADMINISTRATOR_PASSWORD**
 
+> NOTE2
+> <span style="color:blue">All the steps require a text file named init.txt with key value pair as companyId=12</span>
+> <span style="color:blue">companyId is they key and it can't be changed.</span>
+> <span style="color:blue">the value assigned to the key is an integer. The value is pluged in the thrird octect of IP adress schema of all workshop</span>
 
 
 The network diagram is shown below:
@@ -46,7 +51,7 @@ The network diagram is shown below:
 
 [![2]][2]
 
-### <a name="step1"></a>1. Step1: adviced actions after the deployment
+## <a name="step1"></a>1. Step1: adviced actions after the deployment
 
 [![3]][3]
 
@@ -60,7 +65,7 @@ The network diagram is shown below:
 
 
 
-### <a name="step2"></a>2. Step2: adviced actions after the deployment
+## <a name="step2"></a>2. Step2: adviced actions after the deployment
 
 [![4]][4]
 
@@ -86,11 +91,11 @@ The network diagram is shown below:
 8. By SQL Management Studio connect to the SQL server 
 9. In windows firewall, enable the icmp echo in vm0
 
-### <a name="step2"></a>2. Step3: adviced actions after the deployment
+## <a name="step2"></a>2. Step3: adviced actions after the deployment
 
 [![5]][5]
 
-### <a name="step2"></a>2. Step4: adviced actions after the deployment
+## <a name="step2"></a>2. Step4: adviced actions after the deployment
 
 [![6]][6]
 
